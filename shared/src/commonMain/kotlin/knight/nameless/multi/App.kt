@@ -17,24 +17,53 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import knight.nameless.multi.entities.Person
+import knight.nameless.multi.entities.PersonDao
 
 @Composable
 @Preview
-fun App() {
+fun App(/*personDao: PersonDao*/) {
     MaterialTheme {
 
-        PersonForm()
+        PersonForm(/*personDao*/)
     }
 }
 
 @Composable
-fun PersonForm() {
+fun PersonForm(/*personDao: PersonDao*/) {
 
 //    Equivalentes a estados en react esto es lo que utilzaremose n kotlin
     var name by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var showContent by remember { mutableStateOf(false) }
+
+//    LaunchedEffect(Unit) {
+//
+//        val persons = listOf(
+//            Person(
+//                name = "John",
+//                lastName = "Doe",
+//                phoneNumber = "1234567890"
+//            ),
+//
+//            Person(
+//                name = "John1",
+//                lastName = "Doe1",
+//                phoneNumber = "1234567890"
+//            ),
+//
+//        )
+//
+//        persons.forEach { person ->
+//            personDao.upsert(person)
+//        }
+//
+//        personDao.getAll().collect { persons ->
+//            println("Persons: $persons")
+//        }
+//    }
+
 
     Column(
         modifier = Modifier
