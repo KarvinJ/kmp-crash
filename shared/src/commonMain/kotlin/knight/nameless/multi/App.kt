@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -64,25 +65,36 @@ fun PersonForm(/*personDao: PersonDao*/) {
 //        }
 //    }
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(36.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+
+        Text(
+            text = "Registration Form",
+            style = MaterialTheme.typography.headlineSmall
+        )
+
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
             label = { Text("Name") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next
+            )
         )
 
         OutlinedTextField(
             value = lastName,
             onValueChange = { lastName = it },
             label = { Text("Last name") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next
+            ),
         )
 
         OutlinedTextField(
@@ -94,7 +106,9 @@ fun PersonForm(/*personDao: PersonDao*/) {
             },
             label = { Text("Phone number") },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Phone
+                keyboardType = KeyboardType.Phone,
+                imeAction = ImeAction.Next
+
             ),
             modifier = Modifier.fillMaxWidth()
         )
