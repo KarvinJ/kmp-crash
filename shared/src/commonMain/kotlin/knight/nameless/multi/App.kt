@@ -107,6 +107,12 @@ fun PersonForm() {
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next
                     ),
+                    isError = lastName.isBlank() && showErrors,
+                    supportingText = {
+                        if (lastName.isBlank() && showErrors) {
+                            Text("Last name is required")
+                        }
+                    }
                 )
 
                 OutlinedTextField(
@@ -122,10 +128,17 @@ fun PersonForm() {
                         imeAction = ImeAction.Next
 
                     ),
+                    isError = phoneNumber.isBlank() && showErrors,
+                    supportingText = {
+                        if (phoneNumber.isBlank() && showErrors) {
+                            Text("Phone number is required")
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 Button(
+
                     onClick = {
 
                         if (name.isBlank() || lastName.isBlank() || phoneNumber.isBlank()) {
