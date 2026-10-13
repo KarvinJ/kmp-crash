@@ -56,62 +56,84 @@ fun PersonForm() {
 
         Text(
             text = "Registration Form",
-            style = MaterialTheme.typography.headlineSmall
-        )
-
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Name") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
-            )
-        )
-
-        OutlinedTextField(
-            value = lastName,
-            onValueChange = { lastName = it },
-            label = { Text("Last name") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
-            ),
-        )
-
-        OutlinedTextField(
-            value = phoneNumber,
-            onValueChange = { input ->
-
-                val digit = input.filter { it.isDigit() }
-                phoneNumber = Formatters.buildFormattedPhoneNumber(digit)
-            },
-            label = { Text("Phone number") },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Phone,
-                imeAction = ImeAction.Next
-
-            ),
-            modifier = Modifier.fillMaxWidth()
+            style = MaterialTheme.typography.headlineSmall,
         )
 
         Button(
             onClick = {
                 showContent = !showContent
-
-                persons += Person(
-                    name = name,
-                    lastName = lastName,
-                    phoneNumber = phoneNumber
-                )
-
-                name = ""
-                lastName = ""
-                phoneNumber = ""
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Save")
+            Text("Add user")
+        }
+
+        AnimatedVisibility(showContent) {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(36.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next
+                    )
+                )
+
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = { lastName = it },
+                    label = { Text("Last name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next
+                    ),
+                )
+
+                OutlinedTextField(
+                    value = phoneNumber,
+                    onValueChange = { input ->
+
+                        val digit = input.filter { it.isDigit() }
+                        phoneNumber = Formatters.buildFormattedPhoneNumber(digit)
+                    },
+                    label = { Text("Phone number") },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Next
+
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Button(
+                    onClick = {
+
+                        persons += Person(
+                            name = name,
+                            lastName = lastName,
+                            phoneNumber = phoneNumber
+                        )
+
+                        name = ""
+                        lastName = ""
+                        phoneNumber = ""
+
+                        showContent = !showContent
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Save")
+                }
+            }
+
         }
 
 //        ShowPlatform(showContent)
