@@ -45,6 +45,7 @@ fun PersonForm() {
     var lastName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var showContent by remember { mutableStateOf(false) }
+    var showErrors by remember { mutableStateOf(false) }
 
     var persons by remember {
 
@@ -88,7 +89,14 @@ fun PersonForm() {
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next
-                    )
+                    ),
+
+                    isError = name.isBlank() && showErrors,
+                    supportingText = {
+                        if (name.isBlank() && showErrors) {
+                            Text("Name is required")
+                        }
+                    }
                 )
 
                 OutlinedTextField(
@@ -119,6 +127,15 @@ fun PersonForm() {
 
                 Button(
                     onClick = {
+
+                        if (name.isBlank() || lastName.isBlank() || phoneNumber.isBlank()) {
+
+                            showErrors = true
+
+                            return@Button
+                        }
+
+                        showErrors = false
 
                         persons += Person(
                             name = name,
