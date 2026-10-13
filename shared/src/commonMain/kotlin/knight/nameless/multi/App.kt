@@ -3,11 +3,15 @@ package knight.nameless.multi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -19,19 +23,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import knight.nameless.multi.entities.Person
-import knight.nameless.multi.entities.PersonDao
 
 @Composable
 @Preview
-fun App(/*personDao: PersonDao*/) {
+fun App() {
     MaterialTheme {
 
-        PersonForm(/*personDao*/)
+        PersonForm()
     }
 }
 
 @Composable
-fun PersonForm(/*personDao: PersonDao*/) {
+fun PersonForm() {
 
 //    Equivalentes a estados en react esto es lo que utilzaremose n kotlin
     var name by remember { mutableStateOf("") }
@@ -39,31 +42,10 @@ fun PersonForm(/*personDao: PersonDao*/) {
     var phoneNumber by remember { mutableStateOf("") }
     var showContent by remember { mutableStateOf(false) }
 
-//    LaunchedEffect(Unit) {
-//
-//        val persons = listOf(
-//            Person(
-//                name = "John",
-//                lastName = "Doe",
-//                phoneNumber = "1234567890"
-//            ),
-//
-//            Person(
-//                name = "John1",
-//                lastName = "Doe1",
-//                phoneNumber = "1234567890"
-//            ),
-//
-//        )
-//
-//        persons.forEach { person ->
-//            personDao.upsert(person)
-//        }
-//
-//        personDao.getAll().collect { persons ->
-//            println("Persons: $persons")
-//        }
-//    }
+    var persons by remember {
+
+        mutableStateOf(listOf<Person>())
+    }
 
     Column(
         modifier = Modifier
@@ -116,21 +98,72 @@ fun PersonForm(/*personDao: PersonDao*/) {
         Button(
             onClick = {
                 showContent = !showContent
+
+                persons += Person(
+                    name = name,
+                    lastName = lastName,
+                    phoneNumber = phoneNumber
+                )
+
+                name = ""
+                lastName = ""
+                phoneNumber = ""
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Save")
         }
 
-        AnimatedVisibility(showContent) {
+//        ShowPlatform(showContent)
 
+        PersonList(persons = persons)
+    }
+}
+
+@Composable
+fun PersonList(
+    persons: List<Person>,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        items(persons) { person ->
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp)
             ) {
-                Text("Hello ${Greeting().greet()}")
-                Text("Name: $name, Last name: $lastName, Phone number: $phoneNumber")
+                Text(
+                    text = "${person.name} ${person.lastName}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Text(
+                    text = person.phoneNumber,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
+
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun ShowPlatform(showContent: Boolean) {
+
+    AnimatedVisibility(showContent) {
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text("Hello ${Greeting().greet()}")
         }
     }
 }
