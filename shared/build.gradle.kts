@@ -6,13 +6,6 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.androidx.room3)
-}
-
-//Schema root for the room db migrations
-room3 {
-    schemaDirectory("$projectDir/schemas")
 }
 
 kotlin {
@@ -65,9 +58,6 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.uiTooling)
-
-//            Room DB
-            implementation(libs.androidx.sqlite.bundled)
         }
 
 //        Here we add dependencies for all the shared projects, common dependencies
@@ -80,33 +70,16 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-
-            //    Room DB
-            implementation(libs.androidx.room3.runtime)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
         jsMain.dependencies {
             implementation(libs.wrappers.browser)
-
-//            Room DB, specific implementation for the web.
-            implementation(libs.androidx.sqlite.web)
-        }
-
-//        Adding specifies windows dependencies.
-        jvmMain.dependencies {
-            implementation(libs.androidx.sqlite.bundled)
         }
     }
 }
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
-
-//    Room DB
-    add("kspAndroid", libs.androidx.room3.compiler)
-    add("kspIosSimulatorArm64", libs.androidx.room3.compiler)
-    add("kspIosArm64", libs.androidx.room3.compiler)
-//    add("kspIosX64", libs.androidx.room3.compiler) it causes error it is not necessary
 }
