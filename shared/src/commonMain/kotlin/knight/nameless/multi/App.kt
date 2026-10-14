@@ -71,6 +71,7 @@ fun PersonForm() {
             onClick = {
                 showContent = !showContent
             },
+
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Add user")
@@ -205,12 +206,13 @@ fun PersonList(
                         color = MaterialTheme.colorScheme.surface,
                         shape = RoundedCornerShape(12.dp)
                     )
-                    .padding(16.dp)
+                    .padding(8.dp)
             ) {
 
                 Row (
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
 
                     Text(
