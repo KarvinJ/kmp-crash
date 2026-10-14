@@ -5,10 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import knight.nameless.multi.entities.Person
@@ -56,12 +56,15 @@ fun PersonForm() {
         modifier = Modifier
             .fillMaxSize()
             .padding(36.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
 
         Text(
             text = "Registration Form",
             style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth() // Why fillMaxWidth()? It gives the Text the full
+            // available width, so TextAlign.Center can center the text within it.
         )
 
         Button(
@@ -78,8 +81,8 @@ fun PersonForm() {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(36.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
                 OutlinedTextField(
@@ -172,13 +175,21 @@ fun PersonForm() {
 
 //        ShowPlatform(showContent)
 
-        PersonList(persons = persons)
+        PersonList(
+            persons = persons,
+//            De esta forma enviamos funciones por parametro
+            onDelete = { personToRemove ->
+                persons = persons.filter { it != personToRemove }
+            }
+        )
     }
 }
 
 @Composable
 fun PersonList(
     persons: List<Person>,
+//    asi recibimos funciones por parametro
+    onDelete: (Person) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -196,20 +207,25 @@ fun PersonList(
                     )
                     .padding(16.dp)
             ) {
-                Text(
-                    text = "${person.name} ${person.lastName}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
 
-                Text(
-                    text = person.phoneNumber,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                    Text(
+                        text = "${person.name} ${person.lastName}, ${person.phoneNumber}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Button(
+                        onClick = { onDelete(person) },
+                    ) {
+                        Text("Delete")
+                    }
+                }
             }
         }
     }
