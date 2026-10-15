@@ -15,8 +15,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -113,7 +120,8 @@ fun PersonForm() {
                             onValueChange = { name = it },
                             label = { Text("Name") },
                             modifier = Modifier.fillMaxWidth(),
-                            singleLine = true,
+                            singleLine = true, // We need to add this value in true so if I hit tab
+                            // then the text input will jump to the next field.
                             isError = name.isBlank() && showErrors,
                             supportingText = {
                                 if (name.isBlank() && showErrors) {
@@ -218,6 +226,9 @@ fun PersonForm() {
 //            De esta forma enviamos funciones por parametro
             onDelete = { personToRemove ->
                 persons = persons.filter { it != personToRemove }
+            },
+            onEdit = { personToEdit ->
+
             }
         )
     }
@@ -226,43 +237,69 @@ fun PersonForm() {
 @Composable
 fun PersonList(
     persons: List<Person>,
-//    asi recibimos funciones por parametro
+    onEdit: (Person) -> Unit,
     onDelete: (Person) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(16.dp),
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(persons) { person ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.surface,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(8.dp)
-            ) {
 
-                Row (
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 2.dp
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
-                    Text(
-                        text = "${person.name} ${person.lastName}, ${person.phoneNumber}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    Button(
-                        onClick = { onDelete(person) },
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Text("Delete")
+                        Text(
+                            text = "${person.name} ${person.lastName}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        Text(
+                            text = person.phoneNumber,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { onEdit(person) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit person",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { onDelete(person) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete person",
+                            tint = MaterialTheme.colorScheme.error
+                        )
                     }
                 }
             }
