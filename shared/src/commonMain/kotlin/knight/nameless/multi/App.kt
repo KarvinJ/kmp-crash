@@ -38,6 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import knight.nameless.multi.entities.Person
 import kotlin.collections.plus
+import kotlin.random.Random
+import kotlin.uuid.Uuid.Companion.random
 
 @Composable
 @Preview
@@ -50,6 +52,10 @@ fun App() {
         var persons by remember {
 
             mutableStateOf(listOf<Person>())
+        }
+
+        var personToEdit by remember {
+            mutableStateOf<Person?>(null)
         }
 
         Column(
@@ -70,6 +76,7 @@ fun App() {
             Button(
                 onClick = {
                     showCreateDialog = true
+                    personToEdit = null
                 },
 
                 modifier = Modifier.fillMaxWidth()
@@ -85,7 +92,22 @@ fun App() {
                     },
                     onDismiss = {
                         showCreateDialog = false
-                    }
+                    },
+                    onEdit = { person ->
+
+                        showCreateDialog = false
+//     This code updates a person in your persons list by matching their id.
+//     It's useful for implementing the Edit operation in your CRUD app.
+                        persons = persons.map {
+
+                            if (it.id == person.id) {
+                                person
+                            } else {
+                                it
+                            }
+                        }
+                    },
+                    personToEdit = personToEdit
                 )
             }
 
@@ -95,10 +117,10 @@ fun App() {
                 onDelete = { personToRemove ->
                     persons = persons.filter { it != personToRemove }
                 },
-                onEdit = { personToEdit ->
+                onEdit = { person ->
 
                     showCreateDialog = true
-
+                    personToEdit = person
                 }
             )
         }
@@ -113,13 +135,22 @@ fun PersonDialog(
 //    this as a callback. Cuz all the variables send to the child component are immutable.
 //    And the only way to mut is with a callBack function
     onAdd: (Person) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onEdit: (Person) -> Unit,
+    personToEdit: Person? = null
 ) {
 
     //    Equivalentes a estados en react esto es lo que utilzaremose n kotlin
-    var name by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
+    var name by remember {
+        mutableStateOf(personToEdit?.name ?: "")
+    }
+    var lastName by remember {
+        mutableStateOf(personToEdit?.lastName ?: "")
+    }
+    var phoneNumber by remember {
+        mutableStateOf(personToEdit?.phoneNumber ?: "")
+    }
+
     var showErrors by remember { mutableStateOf(false) }
 
     //            AlertDialog is the ideal component to add extra data in a list
@@ -220,13 +251,27 @@ fun PersonDialog(
                         return@Button
                     }
 
-                    val personToCreate = Person(
-                        name = name.trim(),
-                        lastName = lastName.trim(),
-                        phoneNumber = phoneNumber
-                    )
+                    if (personToEdit == null) {
 
-                    onAdd(personToCreate)
+                        val personToCreate = Person(
+                            id = Random.nextInt(1, Int.MAX_VALUE),
+                            name = name.trim(),
+                            lastName = lastName.trim(),
+                            phoneNumber = phoneNumber
+                        )
+
+                        onAdd(personToCreate)
+                    }
+                    else {
+                        val personToUpdate = Person(
+                            id = personToEdit.id,
+                            name = name.trim(),
+                            lastName = lastName.trim(),
+                            phoneNumber = phoneNumber
+                        )
+
+                        onEdit(personToUpdate)
+                    }
 
                     name = ""
                     lastName = ""
