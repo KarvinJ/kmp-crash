@@ -11,12 +11,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +48,7 @@ fun PersonForm() {
     var name by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
-    var showContent by remember { mutableStateOf(false) }
+    var showCreateDialog by remember { mutableStateOf(false) }
     var showErrors by remember { mutableStateOf(false) }
 
     var persons by remember {
@@ -69,7 +73,7 @@ fun PersonForm() {
 
         Button(
             onClick = {
-                showContent = !showContent
+                showCreateDialog = true
             },
 
             modifier = Modifier.fillMaxWidth()
@@ -77,101 +81,134 @@ fun PersonForm() {
             Text("Add user")
         }
 
-        AnimatedVisibility(showContent) {
+        if (showCreateDialog) {
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+//            AlertDialog is the ideal component to add extra data in a list
+            AlertDialog(
+//
+//                This is the equivalent to onClose() in react, called when the user tries to
+//                dismiss the Dialog by clicking outside or pressing the back button.
+//                This is not called when the dismiss button is clicked.
+                onDismissRequest = {
+                    showCreateDialog = false
+                    showErrors = false
+                },
 
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Name") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Next
-                    ),
+                title = {
+                    Text("Add person")
+                },
 
-                    isError = name.isBlank() && showErrors,
-                    supportingText = {
-                        if (name.isBlank() && showErrors) {
-                            Text("Name is required")
-                        }
-                    }
-                )
+//                text which presents the details regarding the dialog's purpose.
+//                Here will put our design dialog code.
+                text = {
 
-                OutlinedTextField(
-                    value = lastName,
-                    onValueChange = { lastName = it },
-                    label = { Text("Last name") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Next
-                    ),
-                    isError = lastName.isBlank() && showErrors,
-                    supportingText = {
-                        if (lastName.isBlank() && showErrors) {
-                            Text("Last name is required")
-                        }
-                    }
-                )
-
-                OutlinedTextField(
-                    value = phoneNumber,
-                    onValueChange = { input ->
-
-                        val digit = input.filter { it.isDigit() }
-                        phoneNumber = Formatters.buildFormattedPhoneNumber(digit)
-                    },
-                    label = { Text("Phone number") },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Phone,
-                        imeAction = ImeAction.Next
-
-                    ),
-                    isError = phoneNumber.isBlank() && showErrors,
-                    supportingText = {
-                        if (phoneNumber.isBlank() && showErrors) {
-                            Text("Phone number is required")
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Button(
-
-                    onClick = {
-
-                        if (name.isBlank() || lastName.isBlank() || phoneNumber.isBlank()) {
-
-                            showErrors = true
-
-                            return@Button
-                        }
-
-                        showErrors = false
-
-                        persons += Person(
-                            name = name,
-                            lastName = lastName,
-                            phoneNumber = phoneNumber
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = name,
+                            onValueChange = { name = it },
+                            label = { Text("Name") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            isError = name.isBlank() && showErrors,
+                            supportingText = {
+                                if (name.isBlank() && showErrors) {
+                                    Text("Name is required")
+                                }
+                            },
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Next
+                            )
                         )
 
-                        name = ""
-                        lastName = ""
-                        phoneNumber = ""
+                        OutlinedTextField(
+                            value = lastName,
+                            onValueChange = { lastName = it },
+                            label = { Text("Last name") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            isError = lastName.isBlank() && showErrors,
+                            supportingText = {
+                                if (lastName.isBlank() && showErrors) {
+                                    Text("Last name is required")
+                                }
+                            },
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Next
+                            )
+                        )
 
-                        showContent = !showContent
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Save")
+                        OutlinedTextField(
+                            value = phoneNumber,
+                            onValueChange = { input ->
+                                val digits = input.filter { it.isDigit() }
+                                phoneNumber =
+                                    Formatters.buildFormattedPhoneNumber(digits)
+                            },
+                            label = { Text("Phone number") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            isError = phoneNumber.isBlank() && showErrors,
+                            supportingText = {
+                                if (phoneNumber.isBlank() && showErrors) {
+                                    Text("Phone number is required")
+                                }
+                            },
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Phone,
+                                imeAction = ImeAction.Done
+                            )
+                        )
+                    }
+                },
+
+//                The confirmButton comes define in the AlertDialog.
+                confirmButton = {
+
+                    Button(
+                        onClick = {
+                            if (
+                                name.isBlank() ||
+                                lastName.isBlank() ||
+                                phoneNumber.isBlank()
+                            ) {
+                                showErrors = true
+                                return@Button
+                            }
+
+                            persons = persons + Person(
+                                name = name.trim(),
+                                lastName = lastName.trim(),
+                                phoneNumber = phoneNumber
+                            )
+
+                            name = ""
+                            lastName = ""
+                            phoneNumber = ""
+                            showErrors = false
+                            showCreateDialog = false
+                        }
+                    ) {
+                        Text("Save")
+                    }
+                },
+
+//                button which is meant to dismiss the dialog. Normally this will be use for the cancel button
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showCreateDialog = false
+                            showErrors = false
+                        }
+                    ) {
+                        Text("Cancel")
+                    }
                 }
-            }
-
+            )
         }
 
 //        ShowPlatform(showContent)
