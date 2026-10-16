@@ -11,20 +11,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import knight.nameless.multi.entities.Person
@@ -34,87 +36,102 @@ import kotlin.collections.plus
 @Preview
 fun App() {
 
+    var showCreateDialog by remember { mutableStateOf(false) }
+
+    var persons by remember {
+
+        mutableStateOf(listOf<Person>())
+    }
+
+    var personToEdit by remember {
+        mutableStateOf<Person?>(null)
+    }
+
+//    The MaterialTheme and scaffold They have different responsibilities:
+//- MaterialTheme defines the visual system: colors, typography, and shapes.
+//- Scaffold provides the structure for a screen: top app bar, content, floating action button,
+// bottom bar, and snackbar
+
     MaterialTheme {
 
-        var showCreateDialog by remember { mutableStateOf(false) }
+//        Scaffold give us a standard structure on how to design the ui of our app,
+//        And also give us several components to add in our app. like floating buttons, top app
+        //        bar and bottom app bar.
+        Scaffold(
 
-        var persons by remember {
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text("Registration Form")
+                    }
+                )
+            },
 
-            mutableStateOf(listOf<Person>())
-        }
+            floatingActionButton = {
 
-        var personToEdit by remember {
-            mutableStateOf<Person?>(null)
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(36.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-
-            Text(
-                text = "Registration Form",
-                style = MaterialTheme.typography.headlineSmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth() // Why fillMaxWidth()? It gives the Text the full
-                // available width, so TextAlign.Center can center the text within it.
-            )
-
-            Button(
-                onClick = {
-                    showCreateDialog = true
-                    personToEdit = null
-                },
-
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Add user")
+                FloatingActionButton(
+                    onClick = {
+                        personToEdit = null
+                        showCreateDialog = true
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add person"
+                    )
+                }
             }
+        ) { innerPadding ->
 
-            if (showCreateDialog) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
 
-                PersonDialog(
-                    onAdd = { person ->
-                        persons = persons + person
-                    },
-                    onDismiss = {
-                        showCreateDialog = false
+                if (showCreateDialog) {
+
+                    PersonDialog(
+                        onAdd = { person ->
+                            persons = persons + person
+                        },
+                        onDismiss = {
+                            showCreateDialog = false
+                        },
+                        onEdit = { person ->
+
+                            showCreateDialog = false
+//     This code updates a person in your persons list by matching their id.
+//     It's useful for implementing the Edit operation in your CRUD app.
+                            persons = persons.map {
+
+                                if (it.id == person.id) {
+                                    person
+                                } else {
+                                    it
+                                }
+                            }
+                        },
+                        personToEdit = personToEdit
+                    )
+                }
+
+                PersonList(
+                    persons = persons,
+//            De esta forma enviamos funciones por parametro
+                    onDelete = { personToRemove ->
+                        persons = persons.filter { it != personToRemove }
                     },
                     onEdit = { person ->
 
-                        showCreateDialog = false
-//     This code updates a person in your persons list by matching their id.
-//     It's useful for implementing the Edit operation in your CRUD app.
-                        persons = persons.map {
-
-                            if (it.id == person.id) {
-                                person
-                            } else {
-                                it
-                            }
-                        }
-                    },
-                    personToEdit = personToEdit
+                        showCreateDialog = true
+                        personToEdit = person
+                    }
                 )
             }
-
-            PersonList(
-                persons = persons,
-//            De esta forma enviamos funciones por parametro
-                onDelete = { personToRemove ->
-                    persons = persons.filter { it != personToRemove }
-                },
-                onEdit = { person ->
-
-                    showCreateDialog = true
-                    personToEdit = person
-                }
-            )
         }
-
-//        ShowPlatform(showContent)
     }
 }
 
