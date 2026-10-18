@@ -58,6 +58,9 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.uiTooling)
+
+//            Ktor
+            implementation(libs.ktor.client.okhttp)
         }
 
 //        Here we add dependencies for all the shared projects, common dependencies
@@ -71,7 +74,17 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.compose.material.icons.extended)
+
+//            Ktor
+            implementation(libs.ktor.client.core)
         }
+
+        jvmMain.dependencies {
+
+//            Ktor
+            implementation(libs.ktor.client.okhttp)
+        }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
