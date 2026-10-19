@@ -33,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import knight.nameless.multi.composables.NetworkCall
+import knight.nameless.multi.composables.PersonDialog
 import knight.nameless.multi.entities.Person
 import knight.nameless.multi.networking.UserClient
 import kotlin.collections.plus
