@@ -91,13 +91,14 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
-        jsMain.dependencies {
-            implementation(libs.wrappers.browser)
-            implementation(libs.ktor.client.cio)
+
+//        this is webMain which can share dependencies between your JS and WasmJS
+        webMain.dependencies {
+            implementation(libs.ktor.client.js)
         }
 
-        wasmJsMain.dependencies {
-            implementation(libs.ktor.client.cio)
+        jsMain.dependencies {
+            implementation(libs.wrappers.browser)
         }
     }
 }
