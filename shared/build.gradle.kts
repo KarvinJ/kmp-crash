@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -75,8 +76,10 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.compose.material.icons.extended)
 
-//            Ktor
-            implementation(libs.ktor.client.core)
+//            Ktor. Since we bundle several libraries with the ktor, then we
+//            just need to call ktor to import them all.
+            implementation(libs.bundles.ktor)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
 
         jvmMain.dependencies {
@@ -90,6 +93,11 @@ kotlin {
         }
         jsMain.dependencies {
             implementation(libs.wrappers.browser)
+            implementation(libs.ktor.client.cio)
+        }
+
+        wasmJsMain.dependencies {
+            implementation(libs.ktor.client.cio)
         }
     }
 }

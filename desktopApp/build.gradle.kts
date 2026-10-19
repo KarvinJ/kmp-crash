@@ -13,6 +13,8 @@ dependencies {
     implementation(libs.kotlinx.coroutinesSwing)
 
     implementation(libs.compose.uiToolingPreview)
+    implementation(libs.ktor.client.okhttp)
+
 }
 
 compose.desktop {
