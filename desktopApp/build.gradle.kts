@@ -13,6 +13,8 @@ dependencies {
     implementation(libs.kotlinx.coroutinesSwing)
 
     implementation(libs.compose.uiToolingPreview)
+    implementation(libs.ktor.client.okhttp)
+
 }
 
 compose.desktop {
@@ -22,7 +24,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "knight.nameless.multi"
-            packageVersion = "1.0.1"
+            packageVersion = "1.1.0"
         }
     }
 }

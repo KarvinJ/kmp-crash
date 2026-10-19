@@ -1,4 +1,4 @@
-package knight.nameless.multi
+package knight.nameless.multi.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
