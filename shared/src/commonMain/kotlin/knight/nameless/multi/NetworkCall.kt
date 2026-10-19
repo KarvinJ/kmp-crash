@@ -3,13 +3,10 @@ package knight.nameless.multi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,67 +26,61 @@ import kotlinx.coroutines.launch
 @Composable
 fun NetworkCall(client: UserClient) {
 
-    var censoredText by remember {
+    var username by remember {
         mutableStateOf<String?>(null)
     }
-    var uncensoredText by remember {
-        mutableStateOf("")
-    }
+
     var isLoading by remember {
         mutableStateOf(false)
     }
+
     var errorMessage by remember {
         mutableStateOf<NetworkError?>(null)
     }
 
+//    This is how you implement coroutines in compose
     val scope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top)
     ) {
-        TextField(
-            value = uncensoredText,
-            onValueChange = { uncensoredText = it },
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-            placeholder = {
-                Text("Uncensored text")
-            }
-        )
+
         Button(onClick = {
 
+//            Calling the coroutine scope
             scope.launch {
+
                 isLoading = true
                 errorMessage = null
 
-                client.getUsers()
-                    .onSuccess {
-                        censoredText = it
-                    }
-                    .onError {
-                        errorMessage = it
-                    }
+                client.getUsers().onSuccess {
+
+                    username = it
+                }.onError {
+                    errorMessage = it
+                }
                 isLoading = false
             }
         }) {
-            if(isLoading) {
+            if (isLoading) {
+
+//                Simple loading progress indicator
                 CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(15.dp),
+                    modifier = Modifier.size(15.dp),
                     strokeWidth = 1.dp,
                     color = Color.White
                 )
             } else {
-                Text("Censor!")
+                Text("Get User!")
             }
         }
-        censoredText?.let {
+
+        username?.let {
             Text(it)
         }
+
         errorMessage?.let {
             Text(
                 text = it.name,

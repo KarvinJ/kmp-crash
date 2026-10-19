@@ -1,6 +1,7 @@
 package knight.nameless.multi
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -21,6 +24,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -46,10 +51,12 @@ fun App(client: UserClient) {
         mutableStateOf<Person?>(null)
     }
 
+    var selectedScreen by remember { mutableIntStateOf(0) }
+
 //    The MaterialTheme and scaffold They have different responsibilities:
 //- MaterialTheme defines the visual system: colors, typography, and shapes.
 //- Scaffold provides the structure for a screen: top app bar, content, floating action button,
-// bottom bar, and snackbar
+// bottom bar, and snack bar
 
     MaterialTheme {
 
@@ -69,68 +76,100 @@ fun App(client: UserClient) {
 
             floatingActionButton = {
 
-                FloatingActionButton(
-                    onClick = {
-                        personToEdit = null
-                        showCreateDialog = true
+                if (selectedScreen == 1) {
+
+                    FloatingActionButton(
+                        onClick = {
+                            personToEdit = null
+                            showCreateDialog = true
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add person"
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add person"
+                }
+            },
+
+//            adding the bottom bar
+            bottomBar = {
+
+//                we normally add the navigation bar here in the bottom bar.
+                NavigationBar {
+
+                    NavigationBarItem(
+                        selected = selectedScreen == 0,
+                        onClick = { selectedScreen = 0 },
+                        icon = { Icon(Icons.Default.Person, null) },
+                        label = { Text("Register") }
+                    )
+
+                    NavigationBarItem(
+                        selected = selectedScreen == 1,
+                        onClick = { selectedScreen = 1 },
+                        icon = { Icon(Icons.Default.People, null) },
+                        label = { Text("People") }
                     )
                 }
             }
+
         ) { innerPadding ->
 
-            NetworkCall(client)
+            Box(Modifier.padding(innerPadding)) {
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
+                when (selectedScreen) {
+                    0 -> NetworkCall(client)
+                    1 -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
 
-                if (showCreateDialog) {
+                            if (showCreateDialog) {
 
-                    PersonDialog(
-                        onAdd = { person ->
-                            persons = persons + person
-                        },
-                        onDismiss = {
-                            showCreateDialog = false
-                        },
-                        onEdit = { person ->
+                                PersonDialog(
+                                    onAdd = { person ->
+                                        persons = persons + person
+                                    },
+                                    onDismiss = {
+                                        showCreateDialog = false
+                                    },
+                                    onEdit = { person ->
 
-                            showCreateDialog = false
+                                        showCreateDialog = false
 //     This code updates a person in your persons list by matching their id.
 //     It's useful for implementing the Edit operation in your CRUD app.
-                            persons = persons.map {
+                                        persons = persons.map {
 
-                                if (it.id == person.id) {
-                                    person
-                                } else {
-                                    it
-                                }
+                                            if (it.id == person.id) {
+                                                person
+                                            } else {
+                                                it
+                                            }
+                                        }
+                                    },
+                                    personToEdit = personToEdit
+                                )
                             }
-                        },
-                        personToEdit = personToEdit
-                    )
-                }
 
-                PersonList(
-                    persons = persons,
+                            PersonList(
+                                persons = persons,
 //            De esta forma enviamos funciones por parametro
-                    onDelete = { personToRemove ->
-                        persons = persons.filter { it != personToRemove }
-                    },
-                    onEdit = { person ->
+                                onDelete = { personToRemove ->
+                                    persons = persons.filter { it != personToRemove }
+                                },
+                                onEdit = { person ->
 
-                        showCreateDialog = true
-                        personToEdit = person
+                                    showCreateDialog = true
+                                    personToEdit = person
+                                }
+                            )
+                        }
                     }
-                )
+                }
             }
         }
     }
