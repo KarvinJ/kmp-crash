@@ -13,16 +13,16 @@ class UserClient (
     private val httpClient: HttpClient
 ) {
 
-    suspend fun getUsers(): Result<String, NetworkError> {
+    suspend fun getUsers(): Result<User, NetworkError> {
 
         val response = try {
 
             httpClient.get("https://jsonplaceholder.typicode.com/users/1")
 
-        } catch (exception: UnresolvedAddressException) {
+        } catch (_: UnresolvedAddressException) {
             return Result.Error(NetworkError.NO_INTERNET)
         }
-        catch (exception: SerializationException) {
+        catch (_: SerializationException) {
             return Result.Error(NetworkError.SERIALIZATION)
         }
 
@@ -30,7 +30,7 @@ class UserClient (
 
             in 200..299 -> {
                 val user = response.body<User>()
-                Result.Success(user.name)
+                Result.Success(user)
             }
             401 -> Result.Error(NetworkError.UNAUTHORIZED)
             409 -> Result.Error(NetworkError.CONFLICT)
