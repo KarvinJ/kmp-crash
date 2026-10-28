@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import knight.nameless.multi.entities.Person
+import knight.nameless.multi.data.entities.Person
 import kotlin.random.Random
 
 //I can simply move this composable function to other files for reuse purposes.

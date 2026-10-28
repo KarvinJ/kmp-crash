@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import knight.nameless.multi.entities.User
+import knight.nameless.multi.data.entities.User
 import knight.nameless.multi.networking.UserClient
 import knight.nameless.multi.networking.util.NetworkError
 import knight.nameless.multi.networking.util.onError
