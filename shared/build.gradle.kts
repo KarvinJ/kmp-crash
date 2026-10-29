@@ -65,8 +65,7 @@ kotlin {
 //            Ktor
             implementation(libs.ktor.client.okhttp)
 
-//            Room DB & SQLite
-            implementation(libs.androidx.room3.runtime)
+//            Room DB
             implementation(libs.androidx.sqlite.bundled)
         }
 
@@ -97,13 +96,11 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
 
 //            Room DB & SQLite
-            implementation(libs.androidx.room3.runtime)
             implementation(libs.androidx.sqlite.bundled)
         }
 
         iosMain.dependencies {
 //            Room DB & SQLite
-            implementation(libs.androidx.room3.runtime)
             implementation(libs.androidx.sqlite.bundled)
         }
 
@@ -114,6 +111,7 @@ kotlin {
 //        this is webMain which can share dependencies between your JS and WasmJS
         webMain.dependencies {
             implementation(libs.ktor.client.js)
+            implementation(libs.androidx.sqlite.web)
         }
 
         jsMain.dependencies {
@@ -134,6 +132,7 @@ dependencies {
 
 //    room db
     add("kspAndroid", libs.androidx.room3.compiler)
+    add("kspJvm", libs.androidx.room3.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room3.compiler)
 //    add("kspIosX64", libs.androidx.room3.compiler)
     add("kspIosArm64", libs.androidx.room3.compiler)
