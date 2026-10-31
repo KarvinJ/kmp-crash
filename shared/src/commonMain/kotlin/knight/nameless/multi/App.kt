@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Accessibility
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person
@@ -20,17 +21,36 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import io.ktor.client.request.invoke
+import knight.nameless.multi.data.PersonRepository
 import knight.nameless.multi.ui.composables.NetworkCall
 import knight.nameless.multi.ui.composables.PersonDialog
 import knight.nameless.multi.ui.composables.PersonList
 import knight.nameless.multi.data.entities.Person
+import knight.nameless.multi.data.toEntity
 import knight.nameless.multi.networking.UserClient
+import knight.nameless.multi.ui.PersonViewModel
+import knight.nameless.multi.ui.composables.PersonListRoom
+import kotlin.collections.getValue
 import kotlin.collections.plus
+import kotlin.getValue
+import kotlin.invoke
 
 @Composable
 fun App(client: UserClient) {
 
+//    val repository = PersonRepository()
+//
+//    val viewModel = ViewModelProvider(
+//        this,
+//        PersonViewModelFactory(repository))
+
+//    val personsDb by viewModel.persons.collectAsState()
+
     var showCreateDialog by remember { mutableStateOf(false) }
+    var showPersonDialog by remember { mutableStateOf(false) }
 
     var persons by remember {
 
@@ -59,19 +79,28 @@ fun App(client: UserClient) {
             topBar = {
                 CenterAlignedTopAppBar(
                     title = {
-                        Text("Registration Form")
+
+                        if (selectedScreen == 0) {
+
+                            Text("Network Test")
+                        }
+                        else {
+
+                            Text("Registration Form")
+                        }
                     }
                 )
             },
 
             floatingActionButton = {
 
-                if (selectedScreen == 1) {
+                if (selectedScreen == 1 || selectedScreen == 2) {
 
                     FloatingActionButton(
                         onClick = {
                             personToEdit = null
                             showCreateDialog = true
+                            showPersonDialog = true
                         }
                     ) {
                         Icon(
@@ -97,8 +126,21 @@ fun App(client: UserClient) {
 
                     NavigationBarItem(
                         selected = selectedScreen == 1,
-                        onClick = { selectedScreen = 1 },
+                        onClick = {
+                            selectedScreen = 1
+                            showCreateDialog = false
+                        },
                         icon = { Icon(Icons.Default.People, null) },
+                        label = { Text("People") }
+                    )
+
+                    NavigationBarItem(
+                        selected = selectedScreen == 2,
+                        onClick = {
+                            selectedScreen = 2
+                            showPersonDialog = false
+                        },
+                        icon = { Icon(Icons.Default.Accessibility, null) },
                         label = { Text("People") }
                     )
                 }
@@ -121,10 +163,12 @@ fun App(client: UserClient) {
                             if (showCreateDialog) {
 
                                 PersonDialog(
+                                    personToEdit = personToEdit,
+                                    onDismiss = {
+                                        showCreateDialog = false
+                                    },
                                     onAdd = { person ->
                                         persons = persons + person
-                                    },
-                                    onDismiss = {
                                         showCreateDialog = false
                                     },
                                     onEdit = { person ->
@@ -141,7 +185,6 @@ fun App(client: UserClient) {
                                             }
                                         }
                                     },
-                                    personToEdit = personToEdit
                                 )
                             }
 
@@ -158,6 +201,52 @@ fun App(client: UserClient) {
                                 }
                             )
                         }
+                    }
+
+                    2 -> {
+
+//                            Code for handling the crud with the room database
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+
+                            if (showPersonDialog) {
+
+                                PersonDialog(
+
+                                    onAdd = { person ->
+//                                        viewModel.upsertPerson(person.toPersonModel())
+                                        showPersonDialog = false
+                                    },
+                                    onDismiss = {
+                                        showPersonDialog = false
+                                    },
+                                    onEdit = { person ->
+
+//                                        viewModel.upsertPerson(person.toPersonModel())
+                                        showPersonDialog = false
+                                    },
+                                    personToEdit = personToEdit
+                                )
+                            }
+
+                            PersonListRoom(
+                                persons =  emptyList()/*personsDb*/,
+                                onDelete = { personToRemove ->
+
+//                                    viewModel.deletePerson(personToRemove)
+                                },
+                                onEdit = { person ->
+
+                                    showPersonDialog = true
+                                    personToEdit = person.toEntity()
+                                }
+                            )
+                        }
+
                     }
                 }
             }
