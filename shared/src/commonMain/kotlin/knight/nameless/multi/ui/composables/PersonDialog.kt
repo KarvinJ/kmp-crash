@@ -1,4 +1,4 @@
-package knight.nameless.multi.composables
+package knight.nameless.multi.ui.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -192,7 +192,7 @@ fun PersonDialog(
     )
 }
 
-fun buildFormattedPhoneNumber(phoneNumber: String): String {
+private fun buildFormattedPhoneNumber(phoneNumber: String): String {
 
     val digitsOnly = phoneNumber.replace("\\D".toRegex(), "")
     val formattedNumber = StringBuilder()
