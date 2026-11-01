@@ -102,6 +102,9 @@ kotlin {
         }
 
         iosMain.dependencies {
+
+//            Ktor dependency
+            implementation(libs.ktor.client.darwin)
 //            Room DB & SQLite
             implementation(libs.androidx.sqlite.bundled)
         }

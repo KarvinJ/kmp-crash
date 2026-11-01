@@ -21,9 +21,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.ktor.client.request.invoke
+import knight.nameless.multi.data.DbFactory
 import knight.nameless.multi.data.PersonRepository
 import knight.nameless.multi.ui.composables.NetworkCall
 import knight.nameless.multi.ui.composables.PersonDialog
@@ -33,21 +32,21 @@ import knight.nameless.multi.data.toEntity
 import knight.nameless.multi.networking.UserClient
 import knight.nameless.multi.ui.PersonViewModel
 import knight.nameless.multi.ui.composables.PersonListRoom
-import kotlin.collections.getValue
+import knight.nameless.multi.ui.personViewModelFactory
 import kotlin.collections.plus
-import kotlin.getValue
-import kotlin.invoke
 
 @Composable
-fun App(client: UserClient) {
+fun App(client: UserClient, dbFactory: DbFactory) {
 
-//    val repository = PersonRepository()
-//
-//    val viewModel = ViewModelProvider(
-//        this,
-//        PersonViewModelFactory(repository))
+    val appDatabase = remember { dbFactory.createDatabase() }
 
-//    val personsDb by viewModel.persons.collectAsState()
+    val repository = PersonRepository(appDatabase.personDao())
+
+    val personViewModel: PersonViewModel = viewModel(
+        factory = personViewModelFactory(repository)
+    )
+
+    val personsDb by personViewModel.persons.collectAsState()
 
     var showCreateDialog by remember { mutableStateOf(false) }
     var showPersonDialog by remember { mutableStateOf(false) }
@@ -83,8 +82,7 @@ fun App(client: UserClient) {
                         if (selectedScreen == 0) {
 
                             Text("Network Test")
-                        }
-                        else {
+                        } else {
 
                             Text("Registration Form")
                         }
@@ -218,7 +216,7 @@ fun App(client: UserClient) {
                                 PersonDialog(
 
                                     onAdd = { person ->
-//                                        viewModel.upsertPerson(person.toPersonModel())
+                                        personViewModel.upsertPerson(person.toPersonModel())
                                         showPersonDialog = false
                                     },
                                     onDismiss = {
@@ -226,7 +224,7 @@ fun App(client: UserClient) {
                                     },
                                     onEdit = { person ->
 
-//                                        viewModel.upsertPerson(person.toPersonModel())
+                                        personViewModel.upsertPerson(person.toPersonModel())
                                         showPersonDialog = false
                                     },
                                     personToEdit = personToEdit
@@ -234,10 +232,10 @@ fun App(client: UserClient) {
                             }
 
                             PersonListRoom(
-                                persons =  emptyList()/*personsDb*/,
+                                persons = personsDb,
                                 onDelete = { personToRemove ->
 
-//                                    viewModel.deletePerson(personToRemove)
+                                    personViewModel.deletePerson(personToRemove)
                                 },
                                 onEdit = { person ->
 

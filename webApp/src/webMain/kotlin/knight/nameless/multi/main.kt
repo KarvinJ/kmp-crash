@@ -13,7 +13,7 @@ fun main() {
         App(
             client = remember {
                 UserClient(createHttpClient(Js.create()))
-            }
+            },
         )
     }
 }
