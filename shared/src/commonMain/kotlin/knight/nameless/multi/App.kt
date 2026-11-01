@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Accessibility
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person
@@ -20,17 +21,37 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import knight.nameless.multi.composables.NetworkCall
-import knight.nameless.multi.composables.PersonDialog
-import knight.nameless.multi.composables.PersonList
-import knight.nameless.multi.entities.Person
+import androidx.lifecycle.viewmodel.compose.viewModel
+import knight.nameless.multi.data.DbFactory
+import knight.nameless.multi.data.PersonRepository
+import knight.nameless.multi.ui.composables.NetworkCall
+import knight.nameless.multi.ui.composables.PersonDialog
+import knight.nameless.multi.ui.composables.PersonList
+import knight.nameless.multi.data.entities.Person
+import knight.nameless.multi.data.toEntity
 import knight.nameless.multi.networking.UserClient
+import knight.nameless.multi.ui.PersonViewModel
+import knight.nameless.multi.ui.composables.PersonListRoom
+import knight.nameless.multi.ui.personViewModelFactory
 import kotlin.collections.plus
 
+//We will work with the dbFactory as null to allow not sending the dbFactory for the web mains for
+// now. Cuz I definitely need this dbFactory to not be null
 @Composable
-fun App(client: UserClient) {
+fun App(client: UserClient, dbFactory: DbFactory? = null) {
+
+    val appDatabase = remember { dbFactory?.createDatabase() }
+
+    val repository = PersonRepository(appDatabase?.personDao())
+
+    val personViewModel: PersonViewModel = viewModel(
+        factory = personViewModelFactory(repository)
+    )
+
+    val personsDb = personViewModel.persons?.collectAsState()
 
     var showCreateDialog by remember { mutableStateOf(false) }
+    var showPersonDialog by remember { mutableStateOf(false) }
 
     var persons by remember {
 
@@ -59,19 +80,27 @@ fun App(client: UserClient) {
             topBar = {
                 CenterAlignedTopAppBar(
                     title = {
-                        Text("Registration Form")
+
+                        if (selectedScreen == 0) {
+
+                            Text("Network Test")
+                        } else {
+
+                            Text("Registration Form")
+                        }
                     }
                 )
             },
 
             floatingActionButton = {
 
-                if (selectedScreen == 1) {
+                if (selectedScreen == 1 || selectedScreen == 2) {
 
                     FloatingActionButton(
                         onClick = {
                             personToEdit = null
                             showCreateDialog = true
+                            showPersonDialog = true
                         }
                     ) {
                         Icon(
@@ -97,8 +126,21 @@ fun App(client: UserClient) {
 
                     NavigationBarItem(
                         selected = selectedScreen == 1,
-                        onClick = { selectedScreen = 1 },
+                        onClick = {
+                            selectedScreen = 1
+                            showCreateDialog = false
+                        },
                         icon = { Icon(Icons.Default.People, null) },
+                        label = { Text("People") }
+                    )
+
+                    NavigationBarItem(
+                        selected = selectedScreen == 2,
+                        onClick = {
+                            selectedScreen = 2
+                            showPersonDialog = false
+                        },
+                        icon = { Icon(Icons.Default.Accessibility, null) },
                         label = { Text("People") }
                     )
                 }
@@ -121,10 +163,12 @@ fun App(client: UserClient) {
                             if (showCreateDialog) {
 
                                 PersonDialog(
+                                    personToEdit = personToEdit,
+                                    onDismiss = {
+                                        showCreateDialog = false
+                                    },
                                     onAdd = { person ->
                                         persons = persons + person
-                                    },
-                                    onDismiss = {
                                         showCreateDialog = false
                                     },
                                     onEdit = { person ->
@@ -141,7 +185,6 @@ fun App(client: UserClient) {
                                             }
                                         }
                                     },
-                                    personToEdit = personToEdit
                                 )
                             }
 
@@ -158,6 +201,52 @@ fun App(client: UserClient) {
                                 }
                             )
                         }
+                    }
+
+                    2 -> {
+
+//                            Code for handling the crud with the room database
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+
+                            if (showPersonDialog) {
+
+                                PersonDialog(
+
+                                    onAdd = { person ->
+                                        personViewModel.upsertPerson(person.toPersonModel())
+                                        showPersonDialog = false
+                                    },
+                                    onDismiss = {
+                                        showPersonDialog = false
+                                    },
+                                    onEdit = { person ->
+
+                                        personViewModel.upsertPerson(person.toPersonModel())
+                                        showPersonDialog = false
+                                    },
+                                    personToEdit = personToEdit
+                                )
+                            }
+
+                            PersonListRoom(
+                                persons = personsDb?.value ?: emptyList(),
+                                onDelete = { personToRemove ->
+
+                                    personViewModel.deletePerson(personToRemove)
+                                },
+                                onEdit = { person ->
+
+                                    showPersonDialog = true
+                                    personToEdit = person.toEntity()
+                                }
+                            )
+                        }
+
                     }
                 }
             }

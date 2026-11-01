@@ -4,7 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.util.network.UnresolvedAddressException
-import knight.nameless.multi.entities.User
+import knight.nameless.multi.data.entities.User
 import knight.nameless.multi.networking.util.NetworkError
 import knight.nameless.multi.networking.util.Result
 import kotlinx.serialization.SerializationException

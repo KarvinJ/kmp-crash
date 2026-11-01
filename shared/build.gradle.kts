@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room3)
 }
 
 kotlin {
@@ -17,6 +19,8 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "Shared"
             isStatic = true
+
+            linkerOpts.add("-lsqlite3") //Why do this?
         }
     }
     
@@ -62,6 +66,9 @@ kotlin {
 
 //            Ktor
             implementation(libs.ktor.client.okhttp)
+
+//            Room DB
+            implementation(libs.androidx.sqlite.bundled)
         }
 
 //        Here we add dependencies for all the shared projects, common dependencies
@@ -80,12 +87,26 @@ kotlin {
 //            just need to call ktor to import them all.
             implementation(libs.bundles.ktor)
             implementation(libs.ktor.serialization.kotlinx.json)
+
+//            need to add this to add the db annotations and need to know how to manage room db for
+//            the web builds cuz the same dependencies works great for android, ios and desktop
+            implementation(libs.androidx.room3.runtime)
         }
 
         jvmMain.dependencies {
-
 //            Ktor
             implementation(libs.ktor.client.okhttp)
+
+//            Room DB & SQLite
+            implementation(libs.androidx.sqlite.bundled)
+        }
+
+        iosMain.dependencies {
+
+//            Ktor dependency
+            implementation(libs.ktor.client.darwin)
+//            Room DB & SQLite
+            implementation(libs.androidx.sqlite.bundled)
         }
 
         commonTest.dependencies {
@@ -95,6 +116,7 @@ kotlin {
 //        this is webMain which can share dependencies between your JS and WasmJS
         webMain.dependencies {
             implementation(libs.ktor.client.js)
+            implementation(libs.androidx.sqlite.web)
         }
 
         jsMain.dependencies {
@@ -103,6 +125,20 @@ kotlin {
     }
 }
 
+room3 {
+    schemaDirectory("$projectDir/schemas")
+}
+
+
 dependencies {
+
+
     androidRuntimeClasspath(libs.compose.uiTooling)
+
+//    room db
+    add("kspAndroid", libs.androidx.room3.compiler)
+    add("kspJvm", libs.androidx.room3.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room3.compiler)
+//    add("kspIosX64", libs.androidx.room3.compiler)
+    add("kspIosArm64", libs.androidx.room3.compiler)
 }

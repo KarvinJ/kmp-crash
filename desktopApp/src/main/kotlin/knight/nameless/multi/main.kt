@@ -4,6 +4,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import io.ktor.client.engine.okhttp.OkHttp
+import knight.nameless.multi.data.DbFactory
 import knight.nameless.multi.networking.UserClient
 import knight.nameless.multi.networking.createHttpClient
 
@@ -15,7 +16,8 @@ fun main() = application {
         App(
             client = remember {
                 UserClient(createHttpClient(OkHttp.create()))
-            }
+            },
+            dbFactory =  DbFactory()
         )
     }
 }

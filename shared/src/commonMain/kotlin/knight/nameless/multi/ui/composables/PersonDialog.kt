@@ -1,4 +1,4 @@
-package knight.nameless.multi.composables
+package knight.nameless.multi.ui.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import knight.nameless.multi.entities.Person
+import knight.nameless.multi.data.entities.Person
 import kotlin.random.Random
 
 //I can simply move this composable function to other files for reuse purposes.
@@ -35,7 +35,7 @@ fun PersonDialog(
     personToEdit: Person? = null
 ) {
 
-    //    Equivalentes a estados en react esto es lo que utilzaremose n kotlin
+    //    Equivalentes a estados en react esto es lo que utilizaremos n kotlin
     var name by remember {
         mutableStateOf(personToEdit?.name ?: "")
     }
@@ -178,7 +178,7 @@ fun PersonDialog(
             }
         },
 
-//                button which is meant to dismiss the dialog. Normally this will be use for the cancel button
+//  button which is meant to dismiss the dialog. Normally this will be used for the cancel button
         dismissButton = {
             TextButton(
                 onClick = {
@@ -192,7 +192,7 @@ fun PersonDialog(
     )
 }
 
-fun buildFormattedPhoneNumber(phoneNumber: String): String {
+private fun buildFormattedPhoneNumber(phoneNumber: String): String {
 
     val digitsOnly = phoneNumber.replace("\\D".toRegex(), "")
     val formattedNumber = StringBuilder()

@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import knight.nameless.multi.networking.UserClient
 import knight.nameless.multi.networking.createHttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import knight.nameless.multi.data.DbFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +21,8 @@ class MainActivity : ComponentActivity() {
             App(
                 client = remember {
                     UserClient(createHttpClient(OkHttp.create()))
-                }
+                },
+                dbFactory = DbFactory(applicationContext)
             )
         }
     }
