@@ -35,7 +35,7 @@ fun PersonDialog(
     personToEdit: Person? = null
 ) {
 
-    //    Equivalentes a estados en react esto es lo que utilzaremose n kotlin
+    //    Equivalentes a estados en react esto es lo que utilizaremos n kotlin
     var name by remember {
         mutableStateOf(personToEdit?.name ?: "")
     }
@@ -178,7 +178,7 @@ fun PersonDialog(
             }
         },
 
-//                button which is meant to dismiss the dialog. Normally this will be use for the cancel button
+//  button which is meant to dismiss the dialog. Normally this will be used for the cancel button
         dismissButton = {
             TextButton(
                 onClick = {

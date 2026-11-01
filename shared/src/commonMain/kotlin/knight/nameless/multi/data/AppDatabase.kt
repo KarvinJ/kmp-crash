@@ -17,9 +17,11 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun personDao(): PersonDao
 }
 
+//object to initialize my database
 @Suppress("NO_ACTUAL_FOR_EXPECT")
 expect object AppDatabaseConstructor: RoomDatabaseConstructor<AppDatabase> {
     override fun initialize(): AppDatabase
 }
 
+//Defining the name of my database
 internal const val dbFilename = "kmp_room_db.db"

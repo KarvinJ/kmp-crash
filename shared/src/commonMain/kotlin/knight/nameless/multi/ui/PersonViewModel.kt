@@ -14,7 +14,8 @@ class PersonViewModel(
 ) : ViewModel() {
 
 
-    //    Una lista de flow te devolvera los datos en tiempo real, investigar mas sobre como funcionan los flow
+    // Una lista de flow te devolvera los datos en tiempo real, investigar mas sobre como
+    // funcionan los flow
     val persons = personRepository.getAll()
         .stateIn(
             viewModelScope,

@@ -4,6 +4,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import knight.nameless.multi.data.PersonRepository
 
+//Code for initialize my PersonViewModel
 fun personViewModelFactory(
     repository: PersonRepository
 ) = viewModelFactory {
