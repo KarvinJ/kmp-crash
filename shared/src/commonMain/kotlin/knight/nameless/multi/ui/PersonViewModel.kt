@@ -17,7 +17,7 @@ class PersonViewModel(
     // Una lista de flow te devolvera los datos en tiempo real, investigar mas sobre como
     // funcionan los flow
     val persons = personRepository.getAll()
-        .stateIn(
+        ?.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(),
             emptyList()

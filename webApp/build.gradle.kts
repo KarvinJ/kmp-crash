@@ -23,7 +23,7 @@ kotlin {
             implementation(project(":shared"))
 
             implementation(libs.compose.ui)
-            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.cio) // Necessary dependency to using ktor in js and wasm
         }
     }
 }

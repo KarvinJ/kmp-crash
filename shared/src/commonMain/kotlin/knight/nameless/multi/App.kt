@@ -35,18 +35,20 @@ import knight.nameless.multi.ui.composables.PersonListRoom
 import knight.nameless.multi.ui.personViewModelFactory
 import kotlin.collections.plus
 
+//We will work with the dbFactory as null to allow not sending the dbFactory for the web mains for
+// now. Cuz I definitely need this dbFactory to not be null
 @Composable
-fun App(client: UserClient, dbFactory: DbFactory) {
+fun App(client: UserClient, dbFactory: DbFactory? = null) {
 
-    val appDatabase = remember { dbFactory.createDatabase() }
+    val appDatabase = remember { dbFactory?.createDatabase() }
 
-    val repository = PersonRepository(appDatabase.personDao())
+    val repository = PersonRepository(appDatabase?.personDao())
 
     val personViewModel: PersonViewModel = viewModel(
         factory = personViewModelFactory(repository)
     )
 
-    val personsDb by personViewModel.persons.collectAsState()
+    val personsDb = personViewModel.persons?.collectAsState()
 
     var showCreateDialog by remember { mutableStateOf(false) }
     var showPersonDialog by remember { mutableStateOf(false) }
@@ -232,7 +234,7 @@ fun App(client: UserClient, dbFactory: DbFactory) {
                             }
 
                             PersonListRoom(
-                                persons = personsDb,
+                                persons = personsDb?.value ?: emptyList(),
                                 onDelete = { personToRemove ->
 
                                     personViewModel.deletePerson(personToRemove)

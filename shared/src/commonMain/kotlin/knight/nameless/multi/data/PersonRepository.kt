@@ -6,22 +6,23 @@ import knight.nameless.multi.domain.PersonModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+//Since the personDao will be null for the web build I need to set up everything here we ?
 data class PersonRepository(
-    private val personDao: PersonDao
+    private val personDao: PersonDao?
 ) {
 
-    fun getAll(): Flow<List<PersonModel>> {
+    fun getAll(): Flow<List<PersonModel>>? {
 
-        val personModels = personDao.getAll().map { persons ->
+        val personModels = personDao?.getAll()?.map { persons ->
             persons.map { it.toDomain() }
         }
 
         return personModels
     }
 
-    fun getById(id: Int): Flow<PersonModel?> {
+    fun getById(id: Int): Flow<PersonModel?>? {
 
-        val personModel = personDao.getById(id).map {
+        val personModel = personDao?.getById(id)?.map {
             it?.toDomain()
         }
 
@@ -29,11 +30,11 @@ data class PersonRepository(
     }
 
     suspend fun upsert(person: PersonModel) {
-        personDao.upsert(person.toEntity())
+        personDao?.upsert(person.toEntity())
     }
 
     suspend fun delete(person: PersonModel) {
-        personDao.delete(person.toEntity())
+        personDao?.delete(person.toEntity())
     }
 }
 
