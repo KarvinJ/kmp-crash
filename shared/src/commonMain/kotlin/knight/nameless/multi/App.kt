@@ -73,7 +73,7 @@ fun App(client: UserClient, dbFactory: DbFactory? = null) {
 
 //        Scaffold give us a standard structure on how to design the ui of our app,
 //        And also give us several components to add in our app. like floating buttons, top app
-        //        bar and bottom app bar.
+        // bar and bottom app bar.
         Scaffold(
 
             modifier = Modifier.fillMaxSize(),
